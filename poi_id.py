@@ -23,22 +23,22 @@ from sklearn.tree import DecisionTreeClassifier
 
 ###List of all features separated by type
 
-###financial features: ['salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 'restricted_stock_deferred', 
-###'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive', 
-###'restricted_stock', 'director_fees', 'to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 
+###financial features: ['salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 'restricted_stock_deferred',
+###'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive',
+###'restricted_stock', 'director_fees', 'to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi',
 ###'shared_receipt_with_poi']
 
-###email features: ['to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 
+###email features: ['to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi',
 ###'shared_receipt_with_poi']
 
-###POI label: [‘poi’]
+###POI label: [ï¿½poiï¿½]
 
 
 
 ### Task 1: All given features.
 
-features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 'restricted_stock_deferred', 
-                 'deferred_income', 'total_stock_value', 'expenses', 
+features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 'restricted_stock_deferred',
+                 'deferred_income', 'total_stock_value', 'expenses',
                  'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock', 'director_fees',
                  'to_messages', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi',
                  'shared_receipt_with_poi']
@@ -50,7 +50,7 @@ with open("final_project_dataset.pkl", "r") as data_file:
 
 ### Task 2: Remove outliers
 
-###look at list of POIs 
+###look at list of POIs
 #for person in data_dict:
 #    poi = data_dict[person]["poi"]
 #    if poi == 1:
@@ -80,7 +80,7 @@ with open("final_project_dataset.pkl", "r") as data_file:
 #        print person
 
 ###TOTAL is not an employee, so need to remove from dataset
-data_dict.pop("TOTAL", 0) 
+data_dict.pop("TOTAL", 0)
 
 ###after seeing TOTAL not a person, look at rest of employee list and see another non-employee
 data_dict.pop("The Travel Agency In the Park", 0)
@@ -90,7 +90,7 @@ data_dict_pd = [{k: data_dict[p][k] if data_dict[p][k] != 'NaN' else None for k 
 data_pd = pd.DataFrame(data_dict_pd)
 employees = pd.Series(list(data_dict.keys()))
 
-###add employee names to dataframe and make a series with employee and number of 
+###add employee names to dataframe and make a series with employee and number of
 ###filled values they have. Remember all have at least 1 (POI)
 data_pd.set_index(employees, inplace = True)
 variable_counts = data_pd.count(axis=1, level=None, numeric_only=True)
@@ -119,8 +119,10 @@ data_dict.pop("LOCKHART EUGENE E")
 ###Percentage of emails to poi compared to all emails sent (from_poi_emails)
 ###Percentage of emails from poi to person compared to all emails received (to_poi_emails)
 
-###function creates list of employees for created feature. Takes into account NaN values and assign 0 
 def create_proportion_variable(subset,total):
+
+    """function creates list of employees for created feature. Takes into account NaN values and assigns 0"""
+
     list=[]
     for person in data_dict:
         if data_dict[person][subset]=="NaN" or data_dict[person][total]== "NaN":
@@ -200,14 +202,14 @@ def test_algorithm_pca(classifier, parameters):
     #create list of feature scores given indices in skb_union
     features_scores = [skb_union.scores_[i] for i in skb_union.get_support(indices=True)]
 
-    print 'The results for the classifier:', classifier 
+    print 'The results for the classifier:', classifier
     print 'The features selected by SelectKBest:'
     print features_selected
     print features_scores
     print 'Best parameters:', cv.best_params_
     #Task 6: Dump classifier, dataset, and features list to pickle files.
     dump_classifier_and_data(clf, my_dataset, features_list)
-    print 'Test Classificatier' 
+    print 'Test Classificatier'
     test_classifier(clf, my_dataset, features_list)
     return clf
 
@@ -227,18 +229,18 @@ def test_algorithm(classifier, parameters):
     #create list of feature scores matching scores and indices from feature selection step
     features_scores = [clf.named_steps['feature_selection'].scores_[i] for i in clf.named_steps['feature_selection'].get_support(indices=True)]
 
-    print 'The results for the classifier:', classifier 
+    print 'The results for the classifier:', classifier
     print 'The features selected by SelectKBest:'
     print features_selected
     print 'The feature scores for features selected by SelectKBest:'
     print features_scores
     print 'Best parameters:', cv.best_params_
     dump_classifier_and_data(clf, my_dataset, features_list)
-    print 'Tester Classification report' 
+    print 'Tester Classification report'
     test_classifier(clf, my_dataset, features_list)
     return clf
 
-###Parameter tuning and feature selection choices 
+###Parameter tuning and feature selection choices
 
 ###Naive Bayes Testing
 #parameters_nb = {'features__feature_selection__k': [1, 5, 10, 15]}
@@ -249,9 +251,9 @@ def test_algorithm(classifier, parameters):
 #test_algorithm(nb, parameters_nb)
 
 ###Introduce PCA
-#parameters_nb_pca = {'features__feature_selection__k': [3, 4, 5, 6, 7], 
-                 #'features__pca__n_components': [1,2,3], 
-                 #'features__pca__whiten': [True, False]} 
+#parameters_nb_pca = {'features__feature_selection__k': [3, 4, 5, 6, 7],
+                 #'features__pca__n_components': [1,2,3],
+                 #'features__pca__whiten': [True, False]}
 #test_algorithm_pca(nb, parameters_nb_pca)
 
 
@@ -280,7 +282,7 @@ def test_algorithm(classifier, parameters):
 #parameters_knn_pca = {'features__feature_selection__k': [3, 4, 5, 6],
                       #'clf__n_neighbors' : [1, 2, 3, 4],
                       #'clf__algorithm': ['ball_tree', 'kd_tree', 'brute', 'auto'],
-                      #'features__pca__n_components': [1,2,3], 
+                      #'features__pca__n_components': [1,2,3],
                       #'features__pca__whiten': [True, False]}
 #test_algorithm_pca(knn, parameters_knn_pca)
 
@@ -293,14 +295,14 @@ def test_algorithm(classifier, parameters):
                    #'clf__min_samples_leaf': [1, 5, 10]}
 #test_algorithm(tree, parameters_tree)
 
-###More features since 15 was optimal                        
+###More features since 15 was optimal
 #parameters_tree = {'feature_selection__k': [12, 13, 14, 15, 16, 17],
                    #'clf__criterion': ['gini', 'entropy'],
                    #'clf__min_samples_split': [2, 10, 15, 20],
                    #'clf__min_samples_leaf': [1, 5, 10]}
 #test_algorithm(tree, parameters_tree)
 
-###Less features since 12 was optimal                       
+###Less features since 12 was optimal
 #parameters_tree = {'feature_selection__k': [8, 9, 10, 11, 12],
                    #'clf__criterion': ['gini', 'entropy'],
                    #'clf__min_samples_split': [2, 10, 15, 20],
